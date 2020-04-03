@@ -16,7 +16,7 @@ img1_sub = cv.subtract(background, img1)
 img2_sub = cv.subtract(background, img2)
 
 # thresholding
-ret, thresholded = cv.threshold(img1_sub, 35, 255, cv.THRESH_TOZERO)
+ret, thresholded = cv.threshold(img1_sub, 25, 255, cv.THRESH_TOZERO)
 # ret, thresholded = cv.threshold(img1_sub, 35, 255, cv.THRESH_BINARY)
 
 # invert image
@@ -32,7 +32,7 @@ def perform_morph_operation(img, operation, kernel):
 kernel_closing_ellipse = cv.getStructuringElement(cv.MORPH_ELLIPSE, (13, 13))
 # kernel_opening_cross = cv.getStructuringElement(cv.MORPH_CROSS, (3, 3))
 # kernel_opening_rect = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
-kernel_opening_ellipse = cv.getStructuringElement(cv.MORPH_ELLIPSE, (45, 45))
+kernel_opening_ellipse = cv.getStructuringElement(cv.MORPH_ELLIPSE, (35, 35))
 # opening = cv.morphologyEx(img_inv, cv.MORPH_OPEN, kernel_opening_cross)
 # opening2 = cv.morphologyEx(img_inv, cv.MORPH_OPEN, kernel_opening_rect)
 # opening3 = cv.morphologyEx(img_inv, cv.MORPH_OPEN, kernel_opening_ellipse)

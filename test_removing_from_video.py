@@ -1,3 +1,6 @@
+# to run program please input into comand line:
+# python test_removing_from_video.py --input 'D:/Wojtek/Projekt Jacek/Proba1BW/video.avi'
+
 from __future__ import print_function
 import cv2 as cv
 import argparse
@@ -9,16 +12,28 @@ args = parser.parse_args()
 if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2(history=5, varThreshold=20, detectShadows = True)
 else:
-    backSub = cv.createBackgroundSubtractorKNN(history=5, varThreshold=20, detectShadows = True)
+    backSub = cv.createBackgroundSubtractorKNN(history=5, dist2Threshold=20, detectShadows = True)
+    cv.createBackgroundSubtractorKNN()
 capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
 if not capture.isOpened:
     print('Unable to open: ' + args.input)
     exit(0)
+
+count_frames = 0
+mask_video_name = 'foreground_mask_inverted.avi'
+ret, frame = capture.read()
+# reset frame index to 0 to read firs frame again in the loop
+capture.set(cv.CAP_PROP_POS_FRAMES, 0)
+height, width, layers = frame.shape
+print(height, width, layers)
+#video = cv.VideoWriter(mask_video_name, 0, 15, (width, height))
 while True:
     ret, frame = capture.read()
     if frame is None:
+        #cv.destroyAllWindows()
+        #video.release()
         break
-    
+    print(count_frames)
     fgMask = backSub.apply(frame)
     
     
@@ -29,7 +44,26 @@ while True:
     cv.createBackgroundSubtractorMOG2()
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
+
+    fgMask_inv = cv.bitwise_not(fgMask)
+
+    frame_to_save = cv.cvtColor(fgMask_inv, cv.COLOR_GRAY2RGB)
+
+    height, width = fgMask_inv.shape
+    print(height, width)
+
+    height1, width1, layers1 = frame.shape
+    print(height1, width1)
+
+    name_mask = 'images/output/mask' + str(count_frames) + '.jpg'
+    cv.imwrite(name_mask, fgMask)
+
+    #video.write(frame_to_save)
     
-    keyboard = cv.waitKey(30)
+    keyboard = cv.waitKey(100)
+    count_frames += 1
     if keyboard == 'q' or keyboard == 27:
+        #cv.destroyAllWindows()
+        #video.release()
+        print("AAAAAA")
         break
