@@ -1,5 +1,6 @@
 # to run program please input into comand line:
 # python test_removing_from_video.py --input 'D:/Wojtek/Projekt Jacek/Proba1BW/video.avi'
+# python test_removing_from_video.py --input 'C:/Users/ejncwjc/Documents/Python/OpenCV/BackgroundRemoval/Video/video_bw1.avi'
 
 from __future__ import print_function
 import cv2 as cv
@@ -20,13 +21,14 @@ if not capture.isOpened:
     exit(0)
 
 count_frames = 0
-mask_video_name = 'foreground_mask_inverted.avi'
+mask_video_name = 'foreground_mask.avi'
+# mask_video_name = 'foreground_mask_inverted.avi'
 ret, frame = capture.read()
 # reset frame index to 0 to read firs frame again in the loop
 capture.set(cv.CAP_PROP_POS_FRAMES, 0)
 height, width, layers = frame.shape
 print(height, width, layers)
-#video = cv.VideoWriter(mask_video_name, 0, 15, (width, height))
+video = cv.VideoWriter(mask_video_name, 0, 15, (width, height))
 while True:
     ret, frame = capture.read()
     if frame is None:
@@ -47,23 +49,23 @@ while True:
 
     fgMask_inv = cv.bitwise_not(fgMask)
 
-    frame_to_save = cv.cvtColor(fgMask_inv, cv.COLOR_GRAY2RGB)
+    frame_to_save = cv.cvtColor(fgMask, cv.COLOR_GRAY2RGB) # not inverted
+    # frame_to_save = cv.cvtColor(fgMask_inv, cv.COLOR_GRAY2RGB) # inverted
 
     height, width = fgMask_inv.shape
-    print(height, width)
+    # print(height, width)
 
     height1, width1, layers1 = frame.shape
-    print(height1, width1)
+    # print(height1, width1)
 
     name_mask = 'images/output/mask' + str(count_frames) + '.jpg'
-    cv.imwrite(name_mask, fgMask)
+    # cv.imwrite(name_mask, fgMask)
 
-    #video.write(frame_to_save)
+    video.write(frame_to_save)
     
     keyboard = cv.waitKey(100)
     count_frames += 1
     if keyboard == 'q' or keyboard == 27:
-        #cv.destroyAllWindows()
-        #video.release()
-        print("AAAAAA")
+        cv.destroyAllWindows()
+        video.release()
         break

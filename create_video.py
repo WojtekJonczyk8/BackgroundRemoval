@@ -1,7 +1,8 @@
 import cv2 as cv
 import os
 
-image_folder = 'D:/Wojtek/Projekt Jacek/Proba1BW'
+# image_folder = 'D:/Wojtek/Projekt Jacek/Proba1BW'
+image_folder = 'C:/Users/ejncwjc/Documents/Python/OpenCV/BackgroundRemoval/Proba2BW'
 video_name = 'video.avi'
 
 images = [img for img in os.listdir(image_folder) if img.endswith(".JPG")]
@@ -10,7 +11,7 @@ frame_large = cv.imread(os.path.join(image_folder, images[0]))
 frame = cv.resize(frame_large, (1410, 705))
 height, width, layers = frame.shape
 
-video = cv.VideoWriter(video_name, 0, 1, (width,height))
+video = cv.VideoWriter(video_name, 0, 15, (width,height))
 
 for idx, image in enumerate(images):
     print(idx)
