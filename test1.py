@@ -24,9 +24,6 @@ img_inv = cv.bitwise_not(thresholded)
 
 # morphological transformations
 
-def perform_morph_operation(img, operation, kernel):
-    return cv.morphologyEx(img, operation, kernel)
-
 # kernel_closing_cross = cv.getStructuringElement(cv.MORPH_CROSS, (3, 3))
 # kernel_closing_rect = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
 kernel_closing_ellipse = cv.getStructuringElement(cv.MORPH_ELLIPSE, (13, 13))
@@ -41,11 +38,11 @@ kernel_opening_ellipse = cv.getStructuringElement(cv.MORPH_ELLIPSE, (35, 35))
 # closing3 = cv.morphologyEx(img_inv, cv.MORPH_CLOSE, kernel_closing_ellipse)
 
 # first closing the image, then two openings
-img_morph_temp1 = perform_morph_operation(img_inv, cv.MORPH_CLOSE, kernel_closing_ellipse)
-img_morph_temp2 = perform_morph_operation(img_morph_temp1, cv.MORPH_CLOSE, kernel_closing_ellipse)
-img_morph_temp3 = perform_morph_operation(img_morph_temp2, cv.MORPH_OPEN, kernel_opening_ellipse)
-img_morph_temp4 = perform_morph_operation(img_morph_temp3, cv.MORPH_OPEN, kernel_opening_ellipse)
-img_morph_temp5 = perform_morph_operation(img_morph_temp4, cv.MORPH_OPEN, kernel_opening_ellipse)
+img_morph_temp1 = cv.morphologyEx(img_inv, cv.MORPH_CLOSE, kernel_closing_ellipse)
+img_morph_temp2 = cv.morphologyEx(img_morph_temp1, cv.MORPH_CLOSE, kernel_closing_ellipse)
+img_morph_temp3 = cv.morphologyEx(img_morph_temp2, cv.MORPH_OPEN, kernel_opening_ellipse)
+img_morph_temp4 = cv.morphologyEx(img_morph_temp3, cv.MORPH_OPEN, kernel_opening_ellipse)
+img_morph_temp5 = cv.morphologyEx(img_morph_temp4, cv.MORPH_OPEN, kernel_opening_ellipse)
 img_morph = img_morph_temp5
 
 

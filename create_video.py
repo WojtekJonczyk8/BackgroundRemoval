@@ -1,8 +1,8 @@
 import cv2 as cv
 import os
 
-# image_folder = 'D:/Wojtek/Projekt Jacek/Proba1BW'
-image_folder = 'C:/Users/ejncwjc/Documents/Python/OpenCV/BackgroundRemoval/Proba2BW'
+image_folder = 'D:/Wojtek/Projekt Jacek/Proba2BW'
+# image_folder = 'C:/Users/ejncwjc/Documents/Python/OpenCV/BackgroundRemoval/Proba1BW'
 video_name = 'video.avi'
 
 images = [img for img in os.listdir(image_folder) if img.endswith(".JPG")]
