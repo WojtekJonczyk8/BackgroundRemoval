@@ -35,7 +35,7 @@ height, width, layers = frame.shape
 # print(height, width, layers)
 video_loops_number = 1
 video_loops_counter = 1
-video = cv.VideoWriter(mask_video_name, 0, 15, (width, height))
+# video = cv.VideoWriter(mask_video_name, 0, 15, (width, height))
 while True:
     ret, frame = capture.read()
     # Break if frame is empty and loops
@@ -96,12 +96,6 @@ while True:
 
     # cv.imshow("blur_dilated", img_dilated_blur)
 
-    # apply mask to original image
-    img_with_mask = cv.bitwise_and(frame, blur)
-    img_with_mask_inv = cv.bitwise_not(img_with_mask)
-    cv.imshow("image with mask", img_with_mask)
-    # cv.imshow("image with mask white back", img_with_mask_inv)
-
     height, width = fgMask_inv.shape
     # print(height, width)
 
@@ -111,11 +105,11 @@ while True:
     name_mask = 'images/output/mask' + str(count_frames) + '.jpg'
     # cv.imwrite(name_mask, fgMask)
 
-    video.write(img_with_mask)
+    # video.write(img_with_mask)
     
     keyboard = cv.waitKey(20)
     count_frames += 1
     if keyboard == 'q' or keyboard == 27:
-        cv.destroyAllWindows()
-        video.release()
+        # cv.destroyAllWindows()
+        # video.release()
         break
