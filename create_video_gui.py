@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 import cv2 as cv
 import os
@@ -8,13 +9,17 @@ folder_path = ''
 root = tk.Tk()
 
 def callback():
+    reset_all_labels()
     global folder_path
     folder_path = fd.askdirectory()
-    folder_name.set(folder_path) 
-    video_saved_info.set("")
+    print(folder_path)
+    if not folder_path:
+        folder_name.set("Folder not set!")
+    else:
+        folder_name.set(folder_path)
 
 def correct_input(inp):
-    video_saved_info.set("")
+    reset_all_labels()
     if inp.isdigit():
         return True
     elif inp == '':
@@ -22,20 +27,27 @@ def correct_input(inp):
     else:
         return False
     
+def update_video_progress(text):
+    video_saved_info.set(text)
+    root.update_idletasks()
+
+def reset_all_labels():
+    update_video_progress("")
+    progress_value.set(0)
+    root.update_idletasks()
+
 errmsg = 'Error!'
 button = tk.Button(root, text = 'Set Folder', 
                 command = callback).grid(row = 0, columnspan  = 1, sticky = 'nesw')
 
 folder_name = tk.StringVar()
 folder_name.set("Folder not set!")
-label_folder_path = tk.Label(root, textvariable = folder_name).grid(row = 0, column = 1, columnspan = 3, sticky = 'nsw')
+label_folder_path = tk.Label(root, textvariable = folder_name).grid(row = 0, column = 1, columnspan = 3)
 
 label_video_name = tk.Label(root, text = 'Video name').grid(row = 1)
 video_name = tk.Entry(root)
 video_name.insert(0, 'video')
 video_name.grid(row = 1, column = 1)
-
-print(video_name.get())
 
 label_width = tk.Label(root, text = 'Video width').grid(row = 2, column = 0)
 frame_width = tk.Entry(root)
@@ -62,33 +74,47 @@ label_video_saved = tk.Label(root, textvariable = video_saved_info).grid(row = 4
 
 def create_video():
     global folder_path
-    video_saved_info.set("")
     vid_name = video_name.get() + ".avi"
     vid_width = int(frame_width.get())
     vid_height = int(frame_height.get())
     fram_rate = int(frame_rate.get())
-    print("folder path: ", folder_path)
 
-    images = [img for img in os.listdir(folder_path) if img.endswith(".JPG")]
-    frame_large = cv.imread(os.path.join(folder_path, images[0]))
-    frame = cv.resize(frame_large, (vid_width, vid_height))
-    height, width, layers = frame.shape
+    images = [img for img in os.listdir(folder_path) if (img.endswith(".JPG") or img.endswith(".jpg"))]
 
-    print(height, width, layers)
+    if images:
+        frame_large = cv.imread(os.path.join(folder_path, images[0]))
+        frame = cv.resize(frame_large, (vid_width, vid_height))
+        height, width, layers = frame.shape
 
-    video = cv.VideoWriter(vid_name, 0, fram_rate, (width, height))
+        video = cv.VideoWriter(vid_name, 0, fram_rate, (width, height))
+        frame_number = len(images)
+        reset_all_labels()
 
-    for idx, image in enumerate(images):
-        print(idx)
-        img_large = cv.imread(os.path.join(folder_path, image))
-        img = cv.resize(img_large, (vid_width, vid_height))
-        video.write(img)
+        for idx, image in enumerate(images):
+            info = str(idx) + " out of " + str(frame_number) + " saved!"
+            progress_val = idx * 100 / frame_number
+            update_video_progress(info)
+            progress_value.set(progress_val)
+            root.update_idletasks()
+            img_large = cv.imread(os.path.join(folder_path, image))
+            img = cv.resize(img_large, (vid_width, vid_height))
+            video.write(img)
 
-    cv.destroyAllWindows()
-    video.release()
-    video_saved_info.set("Video succesfully saved!")
+        progress_val = 100
+        progress_value.set(progress_val)
+        update_video_progress("Video succesfully saved!")
+        cv.destroyAllWindows()
+        video.release()
+        
+        root.update_idletasks()
+    else:
+        update_video_progress("No images found!")
 
 button2 = tk.Button(root, text='Create video', 
                     command=create_video).grid(row = 4, column = 2, columnspan = 2, sticky = "nesw")
+
+progress_value = tk.IntVar()
+progress = ttk.Progressbar(root, orient = 'horizontal', 
+              length = 100, variable = progress_value, mode = 'determinate').grid(row = 5, column = 0, columnspan = 4, sticky = "nesw")
 
 tk.mainloop()
