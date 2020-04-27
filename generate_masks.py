@@ -47,11 +47,12 @@ def calculate_masks():
         time_between_masks = int(time_period.get())
         kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (kernel_dim, kernel_dim))
         count_frames = 1
-        mask_default = cv.imread('images/mask_default.jpg', -1)
+        mask_default_raw = cv.imread('images/mask_default.jpg', -1)
 
         # reset frame index to 0 to read firs frame again in the loop
         capture.set(cv.CAP_PROP_POS_FRAMES, 0)
         height, width, layers = frame.shape
+        mask_default = cv.resize(mask_default_raw, (height, width))
         while True:
             ret, frame = capture.read()
             # Break if frame is empty and loops
@@ -59,7 +60,7 @@ def calculate_masks():
                 cv.destroyAllWindows()
                 progress_val = 100
                 progress_value.set(progress_val)
-                update_video_progress("Video succesfully saved!")
+                update_video_progress("Mask generated!")
                 break
 
             info = str(count_frames) + " out of " + str(frame_total) + " saved!"
@@ -77,7 +78,6 @@ def calculate_masks():
             cv.createBackgroundSubtractorMOG2()
 
             mask_to_save = cv.cvtColor(fgMask, cv.COLOR_GRAY2RGB) # not inverted
-            # mask_to_save = cv.cvtColor(fgMask_inv, cv.COLOR_GRAY2RGB) # inverted
 
             # apply additional mask to remove places where people are not visible at all
             frame_mask = cv.bitwise_and(mask_to_save, mask_default)
@@ -86,6 +86,10 @@ def calculate_masks():
             if blurred_output.get():
                 blur = cv.GaussianBlur(mask_binary, (kernel_dim, kernel_dim), 0)
                 mask_binary = blur
+
+            if median_output.get():
+                median = cv.medianBlur(mask_binary, kernel_dim)
+                mask_binary = median
             
             # morphological operations
             if closed_output.get():
@@ -122,7 +126,6 @@ def calculate_masks():
                 keyboard = cv.waitKey()
                 update_video_progress(current_text)
 
-            count_frames += 1
             if keyboard == ord('q') or keyboard == 27:
                 cv.destroyAllWindows()
                 progress_value.set(0)
@@ -143,6 +146,9 @@ file_label = tk.Label(root, textvariable = file_string_var).grid(row = 0, column
 
 blurred_output = tk.IntVar()
 blurred_checkbox = tk.Checkbutton(root, text = 'blur', variable = blurred_output).grid(row = 1, sticky = 'w')
+
+median_output = tk.IntVar()
+median_checkbox = tk.Checkbutton(root, text = 'median', variable = median_output).grid(row = 1, column = 1, sticky = 'w')
 
 kernel_label = tk.Label(root, text = 'Kernel size').grid(row = 1, column = 2)
 kernel_size = tk.Entry(root)

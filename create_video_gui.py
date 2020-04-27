@@ -12,7 +12,6 @@ def callback():
     reset_all_labels()
     global folder_path
     folder_path = fd.askdirectory()
-    print(folder_path)
     if not folder_path:
         folder_name.set("Folder not set!")
     else:
@@ -99,6 +98,10 @@ def create_video():
             img_large = cv.imread(os.path.join(folder_path, image))
             img = cv.resize(img_large, (vid_width, vid_height))
             video.write(img)
+            keyboard = cv.waitKey(20)
+            cv.imshow("image", img)
+            if keyboard == ord('q') or keyboard == 27:
+                break
 
         progress_val = 100
         progress_value.set(progress_val)
